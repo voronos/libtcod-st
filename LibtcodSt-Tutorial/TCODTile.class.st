@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'blocked',
-		'blocksSight'
+		'blocksSight',
+		'isExplored'
 	],
 	#category : #'LibtcodSt-Tutorial'
 }
@@ -55,6 +56,11 @@ instance blocked: aBool; blocksSight: aBool.
 ]
 
 { #category : #accessing }
+TCODTile >> beExplored [
+	isExplored := true
+]
+
+{ #category : #accessing }
 TCODTile >> blocked [
 	^ blocked
 ]
@@ -74,18 +80,16 @@ TCODTile >> blocksSight: anObject [
 	blocksSight := anObject
 ]
 
-{ #category : #accessing }
-TCODTile >> color [
-	^ self blocksSight
-		ifTrue: [
-			self class defaultDarkWallColor ]
-		ifFalse: [ self class defaultDarkGroundColor ]
-]
-
 { #category : #initialization }
 TCODTile >> initialize [
 	blocked := false.
 	blocksSight := false.
+	isExplored := false.
+]
+
+{ #category : #accessing }
+TCODTile >> isExplored [
+	^ isExplored
 ]
 
 { #category : #accessing }

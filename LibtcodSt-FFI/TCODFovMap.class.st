@@ -16,7 +16,18 @@ self ffiCall: #(void TCOD_map_compute_fov (#TCODFovMap self, int x, int y, int t
 
 { #category : #testing }
 TCODFovMap >> ifVisibleAtX: x atY: y do: aBlock [
-	(self isVisibleAtX: x atY: y)		ifTrue: aBlock
+^	(self
+		isVisibleAtX: x
+		atY: y)
+		ifTrue:
+			aBlock
+]
+
+{ #category : #testing }
+TCODFovMap >> ifVisibleAtX: x atY: y do: aBlock ifNot: anotherBlock [
+^	(self isVisibleAtX: x atY: y)
+		ifTrue: aBlock
+		ifFalse: anotherBlock
 ]
 
 { #category : #testing }

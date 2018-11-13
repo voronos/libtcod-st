@@ -181,12 +181,19 @@ TCODGameMap >> createVerticalTunnelFrom: y1 to: y2 atColumn: x [
 
 { #category : #drawing }
 TCODGameMap >> drawOn: aTcodConsole withFov: aTcodMap [
-	tiles
-		associationsDo: [ :kv | 
-			| pair color |
-			pair := kv key.
-color := (			aTcodMap isVisibleAtX: pair x atY: pair y) ifTrue: [ kv value visibleColor ] ifFalse: [ kv value notVisibleColor  ].
-			aTcodConsole setCharBackgroundAtX: pair x y: pair y toColor: color ]
+	self
+		tilesDo: [ :coord :tile | 
+			| color |
+			color := aTcodMap
+				ifVisibleAtX: coord x
+				atY: coord y
+				do: [ tile beExplored.
+					tile visibleColor ]
+				ifNot: [ tile isExplored
+						ifTrue: [ tile notVisibleColor ] ].
+			color
+				ifNotNil:
+					[ aTcodConsole setCharBackgroundAtX: coord x y: coord y toColor: color ] ]
 ]
 
 { #category : #accessing }
