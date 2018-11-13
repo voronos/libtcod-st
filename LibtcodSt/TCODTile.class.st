@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-TCODTile class >> defaultGroundColor [
+TCODTile class >> defaultDarkGroundColor [
 	
 		^ Color
 		r: 50
@@ -19,12 +19,30 @@ TCODTile class >> defaultGroundColor [
 ]
 
 { #category : #'as yet unclassified' }
-TCODTile class >> defaultWallColor [
+TCODTile class >> defaultDarkWallColor [
 
 	^ Color
 		r: 0
 		g: 0
 		b: 100
+		range: 255
+]
+
+{ #category : #'as yet unclassified' }
+TCODTile class >> defaultLightGroundColor [
+	^ Color
+		r: 200
+		g: 180
+		b: 50
+		range: 255
+]
+
+{ #category : #'as yet unclassified' }
+TCODTile class >> defaultLightkWallColor [
+	^ Color
+		r: 130
+		g: 110
+		b: 50
 		range: 255
 ]
 
@@ -60,8 +78,8 @@ TCODTile >> blocksSight: anObject [
 TCODTile >> color [
 	^ self blocksSight
 		ifTrue: [
-			self class defaultWallColor ]
-		ifFalse: [ self class defaultGroundColor ]
+			self class defaultDarkWallColor ]
+		ifFalse: [ self class defaultDarkGroundColor ]
 ]
 
 { #category : #initialization }
@@ -70,7 +88,22 @@ TCODTile >> initialize [
 	blocksSight := false.
 ]
 
+{ #category : #accessing }
+TCODTile >> notVisibleColor [
+	^ self blocksSight
+		ifTrue: [
+			self class defaultDarkWallColor ]
+		ifFalse: [ self class defaultDarkGroundColor ]
+]
+
 { #category : #'as yet unclassified' }
 TCODTile >> unblockTile [
 self blocked: false; blocksSight: false.
+]
+
+{ #category : #accessing }
+TCODTile >> visibleColor [
+	^ self blocksSight
+		ifTrue: [ self class defaultLightkWallColor  ]
+		ifFalse: [ self class defaultLightGroundColor ]
 ]

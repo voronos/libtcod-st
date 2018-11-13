@@ -6,19 +6,20 @@ Class {
 		'map',
 		'actionMap',
 		'screenWidth',
-		'screenHeight'
+		'screenHeight',
+		'fovMap',
+		'player'
 	],
 	#category : #'LibtcodSt-Tutorial'
 }
 
 { #category : #drawing }
 TCODGame >> drawOn: aTcodConsole [
-map drawOn: aTcodConsole .
-objects do: [ :o | o drawOn: aTcodConsole  ].
-
-aTcodConsole blitTo: TCODConsole null fromExtent: (0@0 extent: screenWidth@screenHeight) toPoint: 0@0.
-TCOD consoleFlush.
-objects do: [ :o | o clearOn: aTcodConsole  ].
+	map drawOn: aTcodConsole withFov: fovMap.
+	objects do: [ :o | o drawOn: aTcodConsole withFov:  fovMap ].
+	aTcodConsole blitTo: TCODConsole null fromExtent: (0 @ 0 extent: screenWidth @ screenHeight) toPoint: 0 @ 0.
+	TCOD consoleFlush.
+	objects do: [ :o | o clearOn: aTcodConsole ]
 ]
 
 { #category : #accessing }
@@ -34,16 +35,15 @@ TCODGame >> handleKeys [
 
 { #category : #initialization }
 TCODGame >> initialize [
-	| player npc |
+	| npc |
 	screenWidth := 80.
 	screenHeight := 50.
 	player := TCODObject new
 		char: $@;
 		color: Color white.
-	map := TCODMap
-		randomNewWidth: TCODMap defaultWidth
-		andHeight: TCODMap defaultHeight
-		withPlayer: player.
+	map := TCODGameMap randomNewWidth: TCODGameMap defaultWidth andHeight: TCODGameMap defaultHeight withPlayer: player.
+	fovMap := TCODMap newWidth: TCODGameMap defaultWidth height: TCODGameMap defaultHeight.
+	fovMap updatePropertiesFrom: map.
 	npc := TCODObject new
 		x: 10;
 		y: 10;
@@ -60,10 +60,27 @@ TCODGame >> initialize [
 { #category : #playing }
 TCODGame >> play [
 	| con |
-	TCOD consoleInitRootWidth: screenWidth height: screenHeight title: 'libtcod - smalltalk' isFullScreen: false renderer: TCODRendererEnum TCOD_RENDERER_SDL .
+	TCOD
+		consoleInitRootWidth: screenWidth
+		height: screenHeight
+		title: 'libtcod - smalltalk'
+		isFullScreen: false
+		renderer: TCODRendererEnum TCOD_RENDERER_SDL.
 	con := TCOD newConsoleWithWidth: screenWidth andHeight: screenHeight.
 	con setDefaultForegroundColor: Color white.
-	[ self drawOn: con.
+	[ 
+	self recomputeFov.
+	self drawOn: con.
 	self handleKeys ] whileFalse.
 	TCOD quit
+]
+
+{ #category : #playing }
+TCODGame >> recomputeFov [
+fovMap
+		computeFovAtX: player x
+		atY: player y
+		torchRadius: 10
+		doComputeLightWalls: true
+		withAlgorithm: TCODFovAlgorithm defaultFovAlgorithm.
 ]

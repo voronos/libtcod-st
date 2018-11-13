@@ -41,6 +41,13 @@ TCODObject >> drawOn: aTcodConsole [
 	putChar: self char atX: self x atY: self y
 ]
 
+{ #category : #drawing }
+TCODObject >> drawOn: aTcodConsole withFov: aTcodMap [
+	aTcodMap ifVisibleAtX: self x atY: self y do: [ aTcodConsole
+				setDefaultForegroundColor: self color;
+				putChar: self char atX: self x atY: self y ]
+]
+
 { #category : #logic }
 TCODObject >> moveOnMap: map byX: dx andY: dy [
 	map
