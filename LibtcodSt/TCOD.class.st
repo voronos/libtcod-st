@@ -5,14 +5,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-TCOD class >> consoleBlit: aTcodConsole xSrc: xSrc ySrc: ySrc width: width height: height toConsole: destConsole xDestination: xDest yDestination: yDest foregroundAlpha: falpha backgroundAlpha: balpha [
-	^ self
-		ffiCall:
-			#(void TCOD_console_blit #(TCODConsole aTcodConsole , int xSrc , int ySrc , int width , int height , TCODConsole destConsole , int xDest , int yDest , float falpha , float balpha))
-		module: LibTCOD 
-]
-
-{ #category : #'as yet unclassified' }
 TCOD class >> consoleCheckForKeypress: flags [
 	^ self
 		ffiCall: #(TCODKey TCOD_console_check_for_keypress #(int flags))

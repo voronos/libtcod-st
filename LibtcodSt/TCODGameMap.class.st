@@ -180,15 +180,6 @@ TCODGameMap >> createVerticalTunnelFrom: y1 to: y2 atColumn: x [
 ]
 
 { #category : #drawing }
-TCODGameMap >> drawOn: aTcodConsole [
-	tiles
-		associationsDo: [ :kv | 
-			| pair |
-			pair := kv key.
-			aTcodConsole setCharBackgroundAtX: pair x y: pair y toColor: kv value color]
-]
-
-{ #category : #drawing }
 TCODGameMap >> drawOn: aTcodConsole withFov: aTcodMap [
 	tiles
 		associationsDo: [ :kv | 
@@ -218,6 +209,17 @@ TCODGameMap >> resetTiles [
 TCODGameMap >> tilesDo: aTwoArgBlock [
 tiles associationsDo: [ :kv |
 	aTwoArgBlock value: kv key value: kv value ]
+]
+
+{ #category : #'as yet unclassified' }
+TCODGameMap >> updateFovMap: aTcodFovMap [
+	self
+		tilesDo: [ :coord :tile | 
+aTcodFovMap 
+				setIsTransparent: tile blocksSight not
+				isWalkable: tile blocked not
+				atX: coord x
+				atY: coord y ]
 ]
 
 { #category : #accessing }

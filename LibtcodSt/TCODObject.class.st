@@ -36,12 +36,6 @@ TCODObject >> color: anObject [
 ]
 
 { #category : #drawing }
-TCODObject >> drawOn: aTcodConsole [
-	aTcodConsole setDefaultForegroundColor: self color;
-	putChar: self char atX: self x atY: self y
-]
-
-{ #category : #drawing }
 TCODObject >> drawOn: aTcodConsole withFov: aTcodMap [
 	aTcodMap ifVisibleAtX: self x atY: self y do: [ aTcodConsole
 				setDefaultForegroundColor: self color;
@@ -51,11 +45,23 @@ TCODObject >> drawOn: aTcodConsole withFov: aTcodMap [
 { #category : #logic }
 TCODObject >> moveOnMap: map byX: dx andY: dy [
 	map
-		at: (self x + dx) @ (self y + dy)
-		ifPresent: [ :tile | 
-			tile blocked
-				ifFalse: [ x := x + dx.
-					y := y + dy ] ]
+		at:
+			(self
+				x
+				+ dx)
+				@
+					(self
+						y
+						+ dy)
+		ifPresent:
+			[ :tile | 
+			tile
+				blocked
+				ifFalse:
+					[ x := x
+						+ dx.
+					y := y
+						+ dy ] ]
 ]
 
 { #category : #accessing }

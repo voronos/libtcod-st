@@ -4,6 +4,21 @@ Class {
 	#category : #'LibtcodSt-FFI'
 }
 
+{ #category : #'as yet unclassified' }
+TCODConsole class >> consoleBlit: aTcodConsole xSrc: xSrc ySrc: ySrc width: width height: height toConsole: destConsole xDestination: xDest yDestination: yDest foregroundAlpha: falpha backgroundAlpha: balpha [
+	^ self
+		ffiCall:
+			#(void TCOD_console_blit #(TCODConsole aTcodConsole , int xSrc , int ySrc , int width , int height , TCODConsole destConsole , int xDest , int yDest , float falpha , float balpha))
+		module: LibTCOD
+]
+
+{ #category : #'instance creation' }
+TCODConsole class >> newWithWidth: aWidth andHeight: aHeight [
+	^ self
+		ffiCall: #(TCODConsole TCOD_console_new #(int aWidth , int aHeight))
+		module: LibTCOD
+]
+
 { #category : #accessing }
 TCODConsole >> atX: x atY: y putChar: aChar withBackground: aBackgroundFlag [
 ^ self ffiCall: #(void TCOD_console_put_char #(TCODConsole self , int x , int y , int aChar , TCODBackgroundFlag aBackgroundFlag))
@@ -12,17 +27,23 @@ TCODConsole >> atX: x atY: y putChar: aChar withBackground: aBackgroundFlag [
 
 { #category : #'as yet unclassified' }
 TCODConsole >> blitTo: aTcodConsole fromExtent: aRect toPoint: destinationPoint [
-	TCOD
-		consoleBlit: self
+	self blitTo: aTcodConsole 
 		xSrc: aRect left
 		ySrc: aRect top
 		width: aRect width
 		height: aRect height
-		toConsole: aTcodConsole
 		xDestination: destinationPoint x
 		yDestination: destinationPoint y
 		foregroundAlpha: 1.0
 		backgroundAlpha: 1.0
+]
+
+{ #category : #'as yet unclassified' }
+TCODConsole >> blitTo: destConsole xSrc: xSrc ySrc: ySrc width: width height: height xDestination: xDest yDestination: yDest foregroundAlpha: falpha backgroundAlpha: balpha [
+	^ self
+		ffiCall:
+			#(void TCOD_console_blit #(TCODConsole self , int xSrc , int ySrc , int width , int height , TCODConsole destConsole , int xDest , int yDest , float falpha , float balpha))
+		module: LibTCOD
 ]
 
 { #category : #'as yet unclassified' }

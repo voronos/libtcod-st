@@ -38,23 +38,74 @@ TCODGame >> initialize [
 	| npc |
 	screenWidth := 80.
 	screenHeight := 50.
-	player := TCODObject new
-		char: $@;
-		color: Color white.
-	map := TCODGameMap randomNewWidth: TCODGameMap defaultWidth andHeight: TCODGameMap defaultHeight withPlayer: player.
-	fovMap := TCODMap newWidth: TCODGameMap defaultWidth height: TCODGameMap defaultHeight.
-	fovMap updatePropertiesFrom: map.
-	npc := TCODObject new
-		x: 10;
-		y: 10;
-		char: $@;
-		color: Color yellow.
+	player := TCODObject
+		new
+		
+			char: $@;
+		
+			color:
+			Color
+				white.
+	map := TCODGameMap
+		randomNewWidth:
+			TCODGameMap
+				defaultWidth
+		andHeight:
+			TCODGameMap
+				defaultHeight
+		withPlayer:
+			player.
+	fovMap := TCODFovMap
+		newWidth:
+			TCODGameMap
+				defaultWidth
+		height:
+			TCODGameMap
+				defaultHeight.
+				map updateFovMap: fovMap.
+	npc := TCODObject
+		new
+		
+			x: 10;
+		
+			y: 10;
+		
+			char: $@;
+		
+			color:
+			Color
+				yellow.
 	objects := {player.
 	npc}.
-	actionMap := {(TCODKeycode TCODK_DOWN -> [ player moveOnMap: map byX: 0 andY: 1 ]).
-	(TCODKeycode TCODK_LEFT -> [ player moveOnMap: map byX: -1 andY: 0 ]).
-	(TCODKeycode TCODK_RIGHT -> [ player moveOnMap: map byX: 1 andY: 0 ]).
-	(TCODKeycode TCODK_UP -> [ player moveOnMap: map byX: 0 andY: -1 ])} asDictionary
+	actionMap := {(TCODKeycode
+		TCODK_DOWN
+		->
+			[ player
+				moveOnMap: map
+				byX: 0
+				andY: 1 ]).
+	(TCODKeycode
+		TCODK_LEFT
+		->
+			[ player
+				moveOnMap: map
+				byX: -1
+				andY: 0 ]).
+	(TCODKeycode
+		TCODK_RIGHT
+		->
+			[ player
+				moveOnMap: map
+				byX: 1
+				andY: 0 ]).
+	(TCODKeycode
+		TCODK_UP
+		->
+			[ player
+				moveOnMap: map
+				byX: 0
+				andY: -1 ])}
+		asDictionary
 ]
 
 { #category : #playing }
