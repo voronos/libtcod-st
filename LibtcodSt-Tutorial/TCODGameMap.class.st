@@ -51,6 +51,18 @@ TCODGameMap class >> newWidth: width andHeight: height [
 ]
 
 { #category : #'instance creation' }
+TCODGameMap class >> randomNewWidth: width andHeight: height forGame: aTcodGame [
+	| instance |
+	instance := self basicNew.
+	instance
+		width: width;
+		height: height.
+	instance resetTiles.
+	instance createRooms: self defaultMaxRooms forGame: aTcodGame.
+	^ instance
+]
+
+{ #category : #'instance creation' }
 TCODGameMap class >> randomNewWidth: width andHeight: height withPlayer: aTcodObject [
 	| instance rooms |
 	instance := self basicNew.
@@ -59,40 +71,7 @@ TCODGameMap class >> randomNewWidth: width andHeight: height withPlayer: aTcodOb
 		height: height.
 	instance resetTiles.
 	rooms := OrderedCollection new.
-	0 to: self defaultMaxRooms do: [ :r | 
-		| w h x y newRoom failed |
-		w := TCOD randomIntFrom: self defaultMinRoomSize to: self defaultMaxRoomSize.
-		h := TCOD randomIntFrom: self defaultMinRoomSize to: self defaultMaxRoomSize.
-		x := TCOD randomIntFrom: 0 to: width - w - 1.
-		y := TCOD randomIntFrom: 0 to: height - h - 1.
-		newRoom := x @ y extent: w @ h.
-		failed := false.
-		rooms
-			detect: [ :otherRoom | newRoom intersects: otherRoom ]
-			ifNone: [ instance createRoom: newRoom.
-				rooms
-					ifEmpty: [ aTcodObject x: newRoom center x y: newRoom center y ]
-					ifNotEmpty: [ "connect rooms via tunnel"
-						| previousCenter |
-						previousCenter := rooms last center.
-						(TCOD randomIntFrom: 0 to: 1) = 1
-							ifTrue: [ instance
-									createHorizontalTunnelFrom: previousCenter x
-									to: newRoom center x
-									atRow: previousCenter y.
-								instance
-									createVerticalTunnelFrom: previousCenter y
-									to: newRoom center y
-									atColumn: newRoom center x ]
-							ifFalse: [ instance
-									createVerticalTunnelFrom: previousCenter y
-									to: newRoom center y
-									atColumn: previousCenter x.
-								instance
-									createHorizontalTunnelFrom: previousCenter x
-									to: newRoom center x
-									atRow: newRoom center y ] ].
-				rooms add: newRoom ] ].
+	instance createRooms: self defaultMaxRooms withPlayer: aTcodObject.
 	^ instance
 ]
 
@@ -152,6 +131,28 @@ TCODGameMap >> createRoom: aRect [
 ]
 
 { #category : #initialization }
+TCODGameMap >> createRooms: roomCount forGame: aTcodGame [
+	| rooms |
+	rooms := OrderedCollection new.
+	0 to: roomCount do: [ :r | 
+		| w h x y newRoom |
+		w := TCOD randomIntFrom: self class defaultMinRoomSize to: self class defaultMaxRoomSize.
+		h := TCOD randomIntFrom: self class defaultMinRoomSize to: self class defaultMaxRoomSize.
+		x := TCOD randomIntFrom: 0 to: width - w - 1.
+		y := TCOD randomIntFrom: 0 to: height - h - 1.
+		newRoom := x @ y extent: w @ h.
+		rooms
+			detect: [ :otherRoom | newRoom intersects: otherRoom ]
+			ifNone: [ self createRoom: newRoom.
+				rooms
+					ifEmpty: [ aTcodGame setPlayerAt: newRoom center ]
+					ifNotEmpty: [ aTcodGame placeObjectsIn: newRoom.
+						self connectRoom: newRoom to: rooms last ].
+				rooms add: newRoom ] ].
+	^ rooms
+]
+
+{ #category : #initialization }
 TCODGameMap >> createRooms: roomCount withPlayer: aPlayer [
 	| rooms |
 	rooms := OrderedCollection new.
@@ -166,9 +167,11 @@ TCODGameMap >> createRooms: roomCount withPlayer: aPlayer [
 			detect: [ :otherRoom | newRoom intersects: otherRoom ]
 			ifNone: [ self createRoom: newRoom.
 				rooms
-					ifEmpty: [ aPlayer x: newRoom center x y: newRoom center y ]
+					ifEmpty:
+						[ aPlayer x: newRoom center x y: newRoom center y ]
 					ifNotEmpty: [ self connectRoom: newRoom to: rooms last ].
-				rooms add: newRoom ] ]
+				rooms add: newRoom ] ].
+	^ rooms
 ]
 
 { #category : #initialization }
@@ -204,6 +207,13 @@ TCODGameMap >> height [
 { #category : #accessing }
 TCODGameMap >> height: anObject [
 	height := anObject
+]
+
+{ #category : #testing }
+TCODGameMap >> isPoint: aPoint blockedInGame: aTcodGame [
+self at: aPoint ifPresent: [ :tile| tile blocked ifTrue: [ ^true ] ].
+aTcodGame objectsAt: aPoint do: [ :o | o doesBlock ifTrue: [ ^true ] ].
+^ false
 ]
 
 { #category : #initialization }
